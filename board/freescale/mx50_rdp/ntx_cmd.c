@@ -1068,16 +1068,8 @@ U_BOOT_CMD(load_ntxbins, 2, 0, do_load_ntxbins,
 static int do_get_PCBA_id(cmd_tbl_t * cmdtp, int flag, int argc, char *argv[])
 {
 	int iRet = 0;
-	
 	if(!gptNtxHwCfg) {
 		run_command("load_ntxbins",0);
-	}
-	
-	if(gptNtxHwCfg) {
-		printf("PCBA_ID:%d\n",gptNtxHwCfg->m_val.bPCB);
-	}
-	else {
-		printf("PCBA_ID:-1\n");
 	}
 	return iRet;
 }
@@ -1109,16 +1101,13 @@ static int card_get_capacity_size(void)
 {
 	int iRet = 0;
 	struct mmc *mmc;
-	
 	mmc = find_mmc_device(_get_sd_number());
-	
 	if (mmc) {
 		if (mmc_init(mmc))
 			puts("MMC card init failed!\n");
 		else
 			iRet = mmc->capacity>>10;
 	}
-	
 	return iRet;
 }
 

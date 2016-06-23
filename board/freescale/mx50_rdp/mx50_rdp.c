@@ -386,7 +386,7 @@ static void _init_tps65185_power(int iIsWakeup,int iIsActivePwr)
 	}
 
 	if(6==gptNtxHwCfg->m_val.bDisplayCtrl) {
-		printf("init TPS65185 power ...\n");
+		//printf("init TPS65185 power ...\n");
 		iCur_I2C_Chn=(int)(gdwBusNum+1);
 		iTPS65185_I2C_Chn = GET_I2C_CHN_TPS65185();
 
@@ -1776,7 +1776,7 @@ void start_overclock(void)
 	unsigned int enset[4];
 	int i;
 
-	printf("Relock PLL1 to 1GHz ...\n");
+	//printf("Relock PLL1 to 1GHz ...\n");
 
 	pfn_overclock = (void *)IRAM_BASE_FREE_ADDR;
 	memcpy(pfn_overclock, mx50_overclock, SZ_4K);
@@ -1818,69 +1818,7 @@ int board_late_init(void)
 
 int checkboard(void)
 {
-#if defined(CONFIG_MX50_RDP)
-	printf("Board: MX50 RDP board\n");
-#elif defined(CONFIG_MX50_RD3)
-	printf("Board: MX50 RD3 board\n");
-#elif defined(CONFIG_MX50_ARM2)
-	printf("Board: MX50 ARM2 board\n");
-#else
-#	error "Unsupported board!"
-#endif
-
-	printf("Boot Reason: [");
-
-	switch (__REG(SRC_BASE_ADDR + 0x8)) {
-	case 0x0001:
-		printf("POR");
-		break;
-	case 0x0009:
-		printf("RST");
-		break;
-	case 0x0010:
-	case 0x0011:
-		printf("WDOG");
-		break;
-	default:
-		printf("unknown");
-	}
-	printf("]\n");
-
-	printf("Boot Device: ");
-	switch (get_boot_device()) {
-	case WEIM_NOR_BOOT:
-		printf("NOR\n");
-		break;
-	case ONE_NAND_BOOT:
-		printf("ONE NAND\n");
-		break;
-	case PATA_BOOT:
-		printf("PATA\n");
-		break;
-	case SATA_BOOT:
-		printf("SATA\n");
-		break;
-	case I2C_BOOT:
-		printf("I2C\n");
-		break;
-	case SPI_NOR_BOOT:
-		printf("SPI NOR\n");
-		break;
-	case SD_BOOT:
-		printf("SD\n");
-		break;
-	case MMC_BOOT:
-		printf("MMC\n");
-		break;
-	case NAND_BOOT:
-		printf("NAND\n");
-		break;
-	case UNKNOWN_BOOT:
-	default:
-		printf("UNKNOWN\n");
-		break;
-	}
-
+	printf("Board: Kobo Aura HD\n\n");
 	return 0;
 }
 
@@ -2272,7 +2210,7 @@ int _get_pcba_id (void)
 			break;	
 	}
 #endif
-	printf ("PCB ID is %d\n",g_pcba_id);
+	//printf ("PCB ID is %d\n",g_pcba_id);
 
 	return g_pcba_id;
 }
@@ -2300,7 +2238,7 @@ int _get_sd_number (void)
 	udelay(10000);
 
 	g_sd_number = (readl(GPIO1_BASE_ADDR + 0x0)>>20) & (0x3);
-	printf("[%s] g_sd_number:%d\n",__FUNCTION__,g_sd_number);
+	//printf("[%s] g_sd_number:%d\n",__FUNCTION__,g_sd_number);
 	return g_sd_number;
 }
 
