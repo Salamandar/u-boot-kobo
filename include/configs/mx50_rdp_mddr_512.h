@@ -120,7 +120,7 @@
 // Joseph 20110531	#define CONFIG_BOOTP_DNS
 
 #define CONFIG_CMD_MMC
-//#define CONFIG_CMD_ENV
+#define CONFIG_CMD_ENV
 
 /*#define CONFIG_CMD */
 #define CONFIG_REF_CLK_FREQ CONFIG_MX50_HCLK_FREQ
@@ -136,67 +136,33 @@
 #define CONFIG_RD_LOADADDR	0x70D00000
 //#define CONFIG_ENV_IS_EMBEDDED
 
-#ifdef CONFIG_MX50_E606XX
-#if 0
-#define	CONFIG_EXTRA_ENV_SETTINGS					\
-		"uboot=u-boot.bin\0"			\
-		"kernel=uImage\0"				\
-		"bootargs_base=setenv bootargs noinitrd console=ttymxc0 rootwait rw no_console_suspend ${bootargs}\0"\
-		"rootdevESD1=/dev/mmcblk1p1\0" \
-		"rootdevESD2=/dev/mmcblk1p2\0" \
-		"rootdevRecovery=/dev/mmcblk0p2\0" \
-		"rootdevNormal=/dev/mmcblk0p1\0" \
-		"rootdev=${rootdevNormal}\0" \
-		"rootfstype=ext3\0" \
-		"bootargs_mmc=setenv bootargs ${bootargs} root=${rootdev} rootfstype=${rootfstype}\0" \
-		"bootcmd_mmc=run bootargs_base bootargs_mmc;load_ntxkernel; bootm\0"   \
-		"bootcmd=run bootcmd_mmc\0" 
+/*-----------------------------
+ * environment
+ *---------------------------*/
+#define CONFIG_SYS_NO_FLASH
+#define CONFIG_ENV_IS_IN_MMC	1
+#define CONFIG_ENV_SECT_SIZE    (128 * 1024)
+#define CONFIG_ENV_OFFSET       (767 * 1024) /* Default offset is 768,
+			        changed to force default environment */
+#define CONFIG_ENV_SIZE		CONFIG_ENV_SECT_SIZE
 
-#else	
-#define	CONFIG_EXTRA_ENV_SETTINGS					\
-		"uboot=u-boot.bin\0"			\
-		"kernel=uImage\0"				\
-		"bootargs_base=setenv bootargs console=ttymxc0,115200 rootwait rw no_console_suspend lpj=3997696\0"\
-		"bootargs_mmc=setenv bootargs ${bootargs}\0" \
-		"bootcmd_mmc=run bootargs_base bootargs_mmc;load_ntxkernel; bootm\0"   \
-		"bootargs_SD=setenv bootargs ${bootargs}\0" \
-		"bootcmd_SD=run bootargs_base bootargs_SD;load_ntxkernel; bootm\0"   \
-		"bootargs_recovery=setenv bootargs ${bootargs}\0" \
-		"bootcmd_recovery=run bootargs_base bootargs_recovery;load_ntxkernel; bootm\0"   \
-		"bootcmd=run bootcmd_mmc\0" \
-		"KRN_SDNUM_SD=1\0" \
-		"KRN_SDNUM_Recovery=0\0" \
-		"verify=no" 
-
-#endif
-
-#else
-#define	CONFIG_EXTRA_ENV_SETTINGS					\
-		"netdev=eth0\0"						\
-		"ethprime=FEC0\0"					\
-		"uboot=u-boot.bin\0"			\
-		"kernel=uImage\0"				\
-		"nfsroot=/opt/eldk/arm\0"				\
-		"bootargs_base=setenv bootargs console=ttymxc0,115200\0"\
-		"bootargs_nfs=setenv bootargs ${bootargs} root=/dev/nfs "\
-			"ip=dhcp nfsroot=${serverip}:${nfsroot},v3,tcp\0"\
-		"bootcmd_net=run bootargs_base bootargs_nfs; "		\
-			"tftpboot ${loadaddr} ${kernel}; bootm\0"	\
-		"bootargs_mmc=setenv bootargs ${bootargs} ip=dhcp "     \
-			"root=/dev/mmcblk0p2 rootwait\0"                \
-		"bootcmd_mmc=run bootargs_base bootargs_mmc; bootm\0"   \
-		"bootcmd=run bootcmd_mmc\0"                             \
-		
-#endif
-
-
-#define CONFIG_ARP_TIMEOUT	200UL
+#define CONFIG_EXTRA_ENV_SETTINGS \
+		"cmd_common=setenv bootargs console=ttymxc0,115200 rootwait quiet no_console_suspend lpj=3997696\0" \
+		"cmd_internal=run cmd_common; setenv bootargs $(bootargs) root=/dev/mmcblk0p1 rootfstype=ext2 rw\0" \
+		"cmd_external=run cmd_common; setenv bootargs $(bootargs) root=/dev/mmcblk1p2 rootfstype=ext2 rw\0" \
+		"bootcmd_default=setenv bootcmd run bootcmd_internal\0" \
+		"bootcmd_first_time=run bootcmd_default; saveenv; reset\0" \
+		"bootcmd_internal=run cmd_internal; load_ntxkernel; bootm\0" \
+		"bootcmd_external=run cmd_external; load_ntxkernel; bootm\0" \
+		"bootcmd_recovery=run bootcmd_external\0" \
+		"bootcmd=run bootcmd_first_time\0" \
+		"verify=no"
 
 /*
  * Miscellaneous configurable options
  */
 #define CONFIG_SYS_LONGHELP		/* undef to save memory */
-#define CONFIG_SYS_PROMPT		"eBR-1A # "
+#define CONFIG_SYS_PROMPT		"kobo > "
 #define CONFIG_AUTO_COMPLETE
 #define CONFIG_SYS_CBSIZE		512	/* Console I/O Buffer Size */
 /* Print Buffer Size */
@@ -248,9 +214,9 @@
 	#define CONFIG_I2C_MULTI_BUS
 	#define CONFIG_HARD_I2C         1
 	#define CONFIG_I2C_MXC          1
-	
+
 	#ifdef CONFIG_I2C_MULTI_BUS//[
-	
+
 	#ifndef __ASSEMBLY__//[
 	typedef struct tagI2C_PLATFORM_DATA {
 		unsigned int dwPort;
@@ -270,7 +236,6 @@
 	#define CONFIG_SYS_I2C_SPEED            100000
 	#define CONFIG_SYS_I2C_SLAVE            0xfe
 	#endif//]CONFIG_I2C_MULTI_BUS
-	
 #endif
 
 
@@ -362,30 +327,6 @@
 #define iomem_valid_addr(addr, size) \
 	(addr >= PHYS_SDRAM_1 && addr <= (PHYS_SDRAM_1 + PHYS_SDRAM_1_SIZE))
 
-/*-----------------------------------------------------------------------
- * FLASH and environment organization
- */
-#define CONFIG_SYS_NO_FLASH
-
-/* Monitor at beginning of flash */
-#define CONFIG_FSL_ENV_IN_MMC
-
-#define CONFIG_ENV_SECT_SIZE    (128 * 1024)
-#define CONFIG_ENV_SIZE         CONFIG_ENV_SECT_SIZE
-
-#if defined(CONFIG_FSL_ENV_IN_NAND)
-	#define CONFIG_ENV_IS_IN_NAND 1
-	#define CONFIG_ENV_OFFSET	0x100000
-#elif defined(CONFIG_FSL_ENV_IN_MMC)
-	#define CONFIG_ENV_IS_IN_MMC	1
-	#define CONFIG_ENV_OFFSET	(768 * 1024)
-#elif defined(CONFIG_FSL_ENV_IN_SF)
-	#define CONFIG_ENV_IS_IN_SPI_FLASH	1
-	#define CONFIG_ENV_SPI_CS		1
-	#define CONFIG_ENV_OFFSET       (768 * 1024)
-#else
-	#define CONFIG_ENV_IS_NOWHERE	1
-#endif
 #endif				/* __CONFIG_H */
 
 #define CONFIG_MXC_KPD
@@ -398,4 +339,3 @@
 	}
 #define CONFIG_MXC_KPD_COLMAX 4
 #define CONFIG_MXC_KPD_ROWMAX 4
-
