@@ -88,6 +88,9 @@ int init_mmc_for_env(struct mmc *mmc)
 
 #ifdef CONFIG_CMD_SAVEENV
 
+# define inline		inline		__attribute__((always_inline)) __attribute__((__gnu_inline__))
+# define __inline__	__inline__	__attribute__((always_inline)) __attribute__((__gnu_inline__))
+# define __inline	__inline	__attribute__((always_inline)) __attribute__((__gnu_inline__))
 inline int write_env(struct mmc *mmc, unsigned long size,
 			unsigned long offset, const void *buffer)
 {
@@ -159,4 +162,3 @@ static void use_default()
 	set_default_env();
 }
 #endif
-

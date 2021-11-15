@@ -127,6 +127,10 @@ void *sbrk (ptrdiff_t increment)
  ************************************************************************
  * May be supplied by boards if desired
  */
+
+# define inline		inline		__attribute__((always_inline)) __attribute__((__gnu_inline__))
+# define __inline__	__inline__	__attribute__((always_inline)) __attribute__((__gnu_inline__))
+# define __inline	__inline	__attribute__((always_inline)) __attribute__((__gnu_inline__))
 void inline __coloured_LED_init (void) {}
 void coloured_LED_init(void)__attribute__((weak, alias("__coloured_LED_init")));
 void inline __red_LED_on (void) {}

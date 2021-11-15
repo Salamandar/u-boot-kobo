@@ -12,8 +12,8 @@ tmpresult="/tmp/${IDSTR}.tmp"
 ########################
 ##### GLOBAL #######
 
-PCBA=""
-RAMTYPE=""
+PCBA="E50610"
+RAMTYPE="K4X2G323PC"
 
 ########################
 
@@ -43,7 +43,7 @@ select_uboot() {
 prepare_flash_header_S() {
 	errorno=0
 
-	select_uboot
+	# select_uboot
 
 	echo "PCBA=${PCBA}"
 	echo "RAMTYPE=${RAMTYPE}"
@@ -91,8 +91,8 @@ prepare_flash_header_S
 [ $? != 0 ] && echo "prepare flash header fail !!" && exit 1
 
 
-make ARCH=arm CROSS_COMPILE=arm-fsl-linux-gnueabi- mx50_rdp_config
-make ARCH=arm CROSS_COMPILE=arm-fsl-linux-gnueabi- #|tee make.log
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- mx50_rdp_config
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- #|tee make.log
 #if [ -f u-boot.bin ];then
 #	sudo dd if=u-boot.bin of=u-boot-no-padding.bin bs=512 skip=2
 #fi
@@ -100,7 +100,6 @@ make ARCH=arm CROSS_COMPILE=arm-fsl-linux-gnueabi- #|tee make.log
 
 mv "u-boot.bin" "u-boot_mddr_256-${PCBA}-${RAMTYPE}.bin"
 
-rm -f ${tmpresult}* 
+rm -f ${tmpresult}*
 
 exit 0
-
