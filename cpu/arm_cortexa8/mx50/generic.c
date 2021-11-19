@@ -649,31 +649,31 @@ void mxc_dump_clocks(void)
 {
 	u32 freq;
 	freq = __decode_pll(PLL1_CLK, CONFIG_MX50_HCLK_FREQ);
-	//printf("mx50 pll1: %dMHz\n", freq / 1000000);
+	printf("mx50 pll1: %dMHz\n", freq / 1000000);
 	freq = __decode_pll(PLL2_CLK, CONFIG_MX50_HCLK_FREQ);
-	//printf("mx50 pll2: %dMHz\n", freq / 1000000);
+	printf("mx50 pll2: %dMHz\n", freq / 1000000);
 	freq = __decode_pll(PLL3_CLK, CONFIG_MX50_HCLK_FREQ);
-	//printf("mx50 pll3: %dMHz\n", freq / 1000000);
-	//printf("ipg clock     : %dHz\n", mxc_get_clock(MXC_IPG_CLK));
-	//printf("ipg per clock : %dHz\n", mxc_get_clock(MXC_IPG_PERCLK));
-	//printf("uart clock    : %dHz\n", mxc_get_clock(MXC_UART_CLK));
+	printf("mx50 pll3: %dMHz\n", freq / 1000000);
+	printf("ipg clock     : %dHz\n", mxc_get_clock(MXC_IPG_CLK));
+	printf("ipg per clock : %dHz\n", mxc_get_clock(MXC_IPG_PERCLK));
+	printf("uart clock    : %dHz\n", mxc_get_clock(MXC_UART_CLK));
 #ifdef CONFIG_IMX_ECSPI
-	//printf("cspi clock    : %dHz\n", mxc_get_clock(MXC_CSPI_CLK));
+	printf("cspi clock    : %dHz\n", mxc_get_clock(MXC_CSPI_CLK));
 #endif
-	//printf("ahb clock     : %dHz\n", mxc_get_clock(MXC_AHB_CLK));
-	//printf("axi_a clock   : %dHz\n", mxc_get_clock(MXC_AXI_A_CLK));
-	//printf("axi_b clock   : %dHz\n", mxc_get_clock(MXC_AXI_B_CLK));
-	//printf("weim_clock    : %dHz\n", mxc_get_clock(MXC_EMI_SLOW_CLK));
-	//printf("ddr clock     : %dHz\n", mxc_get_clock(MXC_DDR_CLK));
+	printf("ahb clock     : %dHz\n", mxc_get_clock(MXC_AHB_CLK));
+	printf("axi_a clock   : %dHz\n", mxc_get_clock(MXC_AXI_A_CLK));
+	printf("axi_b clock   : %dHz\n", mxc_get_clock(MXC_AXI_B_CLK));
+	printf("weim_clock    : %dHz\n", mxc_get_clock(MXC_EMI_SLOW_CLK));
+	printf("ddr clock     : %dHz\n", mxc_get_clock(MXC_DDR_CLK));
 #ifdef CONFIG_CMD_MMC
-	//printf("esdhc1 clock  : %dHz\n", mxc_get_clock(MXC_ESDHC_CLK));
-	//printf("esdhc2 clock  : %dHz\n", mxc_get_clock(MXC_ESDHC2_CLK));
-	//printf("esdhc3 clock  : %dHz\n", mxc_get_clock(MXC_ESDHC3_CLK));
-	//printf("esdhc4 clock  : %dHz\n", mxc_get_clock(MXC_ESDHC4_CLK));
+	printf("esdhc1 clock  : %dHz\n", mxc_get_clock(MXC_ESDHC_CLK));
+	printf("esdhc2 clock  : %dHz\n", mxc_get_clock(MXC_ESDHC2_CLK));
+	printf("esdhc3 clock  : %dHz\n", mxc_get_clock(MXC_ESDHC3_CLK));
+	printf("esdhc4 clock  : %dHz\n", mxc_get_clock(MXC_ESDHC4_CLK));
 #endif
 #ifdef CONFIG_CMD_NAND
-	//printf("GPMI clock    : %dHz\n", mxc_get_clock(MXC_GPMI_CLK));
-	//printf("BCH clock     : %dHz\n", mxc_get_clock(MXC_BCH_CLK));
+	printf("GPMI clock    : %dHz\n", mxc_get_clock(MXC_GPMI_CLK));
+	printf("BCH clock     : %dHz\n", mxc_get_clock(MXC_BCH_CLK));
 #endif
 }
 

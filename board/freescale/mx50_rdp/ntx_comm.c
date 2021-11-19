@@ -116,13 +116,16 @@ static unsigned long _get_ramsize(unsigned char **O_ppbRamStart)
 
 static unsigned long _load_ntx_bin_header(int I_iSDDevNum,unsigned long I_dwBinSectorNum,unsigned char *O_pbBuf,unsigned long I_dwBufSize)
 {
-	printf("\n** Loading firmware blobs from mmc **\n");
 	char cCmdA[128];
 	unsigned long dwBinSize = 0;
 	unsigned char *pbMagic;
-
+	
+	//ASSERT(I_dwBufSize>=512);
+	
+	
 	sprintf(cCmdA,"mmc read %d 0x%x 0x%x 0x1",I_iSDDevNum,(unsigned)O_pbBuf,(unsigned)(I_dwBinSectorNum-1));
 	run_command(cCmdA, 0);//
+	
 	pbMagic = O_pbBuf + 512 -16 ;
 	if( gszNtxBinMagicA[0]==pbMagic[0]&&gszNtxBinMagicA[1]==pbMagic[1]&&
 		gszNtxBinMagicA[2]==pbMagic[2]&&gszNtxBinMagicA[3]==pbMagic[3]) 
@@ -132,20 +135,27 @@ static unsigned long _load_ntx_bin_header(int I_iSDDevNum,unsigned long I_dwBinS
 	else {
 		printf("binary magic @ sector no. %lu not found !\n",I_dwBinSectorNum);
 	}
-
-	return dwBinSize;
+	
+	return dwBinSize; 
 }
 
 static void _load_ntx_bin(int I_iSDDevNum,unsigned long I_dwBinSectorNum,unsigned long I_dwBinSectorsToLoad,unsigned char *O_pbBuf,unsigned long I_dwBufSize)
 {
 	char cCmdA[128];
+	
+	//ASSERT(I_dwBufSize>=(I_dwBinSectorsToLoad*512));
+	
+	
 	sprintf(cCmdA,"mmc read %d 0x%x 0x%x 0x%x",I_iSDDevNum,(unsigned)O_pbBuf,(unsigned)I_dwBinSectorNum,(unsigned)I_dwBinSectorsToLoad);
-	run_command(cCmdA, 0);
+	run_command(cCmdA, 0);//
+		 
 }
 
 void _load_isd_hwconfig(void)
 {
 	unsigned long dwChk;
+
+	
 	if(gptNtxHwCfg) {
 		return ;
 	}
@@ -201,8 +211,12 @@ static void _load_ntxbins_and_append_boot_args(char *O_cBufA,unsigned long I_ulB
 	unsigned char *pbLoadAddr;
 	int iLoadDeviceNum = GET_ISD_NUM();
 
+
+	// [ WARNING : be pair .
 	int iLoadSecNO[] = {SD_OFFSET_SECS_HWCFG,SD_OFFSET_SECS_LOGO,SD_OFFSET_SECS_WAVEFORM};
 	char *szLoadNameA[] = {(char *)gszKParamName_HwCfg,(char *)gszKParamName_logo,(char *)gszKParamName_waveform};
+	// ] 
+	
 	int i;
 
 
@@ -215,13 +229,13 @@ static void _load_ntxbins_and_append_boot_args(char *O_cBufA,unsigned long I_ulB
 
 
 	dwRamSize = _get_ramsize(&pbLoadAddr);
-	//printf("ram p=%p,size=%u\n",pbLoadAddr,(unsigned)dwRamSize);
+	printf("ram p=%p,size=%u\n",pbLoadAddr,(unsigned)dwRamSize);
 	pbLoadAddr += dwRamSize;
 	dwTotalReservedSize = 0;
 	//
 	//
 	iLoadDeviceNum = GET_ISD_NUM();
-	for(i=0;i<sizeof(iLoadSecNO)/sizeof(iLoadSecNO[0]);i++)
+	for(i=0;i<sizeof(iLoadSecNO)/sizeof(iLoadSecNO[0]);i++) 
 	{
 		if(0==strcmp(szLoadNameA[i],gszKParamName_HwCfg) && gptNtxHwCfg && gdwNtxHwCfgSize>0 ) {
 			dwImgSize = gdwNtxHwCfgSize;
@@ -273,7 +287,11 @@ static void _load_ntxbins_and_append_boot_args(char *O_cBufA,unsigned long I_ulB
 				dwTotalReservedSize+=dwReadBytes;
 				strcat(O_cBufA,cAppendStr);
 			}
+			else {
+				printf("no \"%s\" bin header\n",szLoadNameA[i]);
+			}
 		}
+		
 	}
 
 	if(gptEsdNtxHwCfg) {
@@ -290,8 +308,8 @@ static void _load_ntxbins_and_append_boot_args(char *O_cBufA,unsigned long I_ulB
 		gptNtxHwCfg->m_val.bUIStyle = gptEsdNtxHwCfg->m_val.bUIStyle;
 		gptNtxHwCfg->m_val.bUIConfig = gptEsdNtxHwCfg->m_val.bUIConfig;
 	}
-
-	if(0!=dwTotalReservedSize)
+	
+	if(0!=dwTotalReservedSize) 
 	{
 		unsigned long dwTemp,dwTemp2;
 
@@ -299,21 +317,21 @@ static void _load_ntxbins_and_append_boot_args(char *O_cBufA,unsigned long I_ulB
 		dwTemp2 = dwTemp&0xffffffff;
 
 
-		//printf("Kernel RAM visiable size=%dM->%dM\n",(int)dwTemp,(int)dwTemp2);
+		printf("Kernel RAM visiable size=%dM->%dM\n",(int)dwTemp,(int)dwTemp2);
 
 		sprintf(cAppendStr," mem=%dM",(int)dwTemp2);
 		strcat(O_cBufA,cAppendStr);
 	}
-
+	
 
 	//run_command("mmc sw_dev 1", 0);// switch to external sdcard .
 
 	giIsNtxBinsLoaded = 1;
-	printf("\n** Firmware loaded!, booting **\n");
+
 }
 
 
-unsigned char *gpbKernelAddr=0; // kernel address .
+unsigned char *gpbKernelAddr=0; // kernel address . 
 unsigned long gdwKernelSize=0; // kernel size in byte .
 
 static int _load_ntxkernel(unsigned char **O_ppbKernelAddr,unsigned long *O_pdwKernelSize)
@@ -361,11 +379,16 @@ static int _load_ntxkernel(unsigned char **O_ppbKernelAddr,unsigned long *O_pdwK
 	else 
 #endif //] AUTO_DETECT_KIMGSIZE
 	{
+#ifdef AUTO_DETECT_KIMGSIZE//[
+
+		printf("no kernel image signature !\n");
+#endif //]AUTO_DETECT_KIMGSIZE
 		dwImgSize = DEFAULT_LOAD_KERNEL_SZ;
 		sprintf(cCmdA,"mmc read %d 0x%x 0x%x 0x%x",gi_mmc_num_kernel,(unsigned)offset,\
 			SD_OFFSET_SECS_KERNEL,DEFAULT_LOAD_KERNEL_SZ);
 		//printf("cmd=%s\n",cCmdA);
-		run_command(cCmdA, 0);//
+		run_command(cCmdA, 0);// 
+	
 	}
 
 	if(O_ppbKernelAddr) {
@@ -392,7 +415,7 @@ U_BOOT_CMD(load_ntxkernel, 2, 0, do_load_ntxkernel,
 
 
 
-unsigned char *gpbRDaddr=0; // initrd address .
+unsigned char *gpbRDaddr=0; // initrd address . 
 unsigned long gdwRDsize=0; // initrd size in byte .
 
 static int _load_ntxrd(unsigned char **O_ppbRDaddr,unsigned long *O_pdwRDsize)
@@ -444,9 +467,10 @@ static int _load_ntxrd(unsigned char **O_ppbRDaddr,unsigned long *O_pdwRDsize)
 			printf("rd size = %lu\n",dwImgSize);
 			dwReadSectors = dwImgSize>>9|1;
 			dwReadSectors += 6;
+			//dwReadSectors = 0xfff;
 			sprintf(cCmdA,"mmc read %d 0x%lx 0x%lx 0x%lx",gi_mmc_num_kernel,offset,\
 				(unsigned long)dwOffsetSecsINITRDA[i],dwReadSectors);
-			run_command(cCmdA, 0);
+			run_command(cCmdA, 0);// 
 
 			if(O_ppbRDaddr) {
 				*O_ppbRDaddr = (unsigned char *)offset;
@@ -458,7 +482,7 @@ static int _load_ntxrd(unsigned char **O_ppbRDaddr,unsigned long *O_pdwRDsize)
 
 			break;
 		}
-		else
+		else 
 		{
 			printf("no ramdisk image signature ! skip load initrd !\n");
 		}
@@ -532,7 +556,7 @@ static int _detect_bootmode(void)
 		if(ntxup_is_ext_card_inserted() && 1==ntxup_wait_key_esdupg()) {
 			printf("\n**************************\n\n");
 			printf("\n**  1. Boot from ESD    **\n\n");
-			printf("\n**************************\n\n");
+			printf("\n**************************\n\n");		
 			iRet = NTX_BOOTMODE_ESD_UPG;
 		}
 		else {
@@ -541,14 +565,16 @@ static int _detect_bootmode(void)
 		break;
 	case 27:
 		if(ntxup_wait_touch_recovery()) {
-			printf("** booting from external SD **\n\n");
+			printf("\n**********************************\n\n");
+			printf("\n**  Boot from SD quick recovery **\n\n");
+			printf("\n**********************************\n\n");		
 			iRet = NTX_BOOTMODE_RECOVERY;
 		}
 		else
 			iRet = NTX_BOOTMODE_ISD;
 		break;
 	default :
-
+		
 #if 0
 	{
 		// test code .
@@ -561,18 +587,20 @@ static int _detect_bootmode(void)
 			iPwr_Key=iTempKey;
 		}
 	}
-#endif
+#endif 
 
 		if((iESD_in=ntxup_is_ext_card_inserted()) && 1==(iUPG_Key=ntxup_wait_key_esdupg()) && (iPwr_Key=_power_key_status()) ) 
 		{
 			printf("\n**************************\n\n");
 			printf("\n**  0. Boot from ESD    **\n\n");
-			printf("\n**************************\n\n");
+			printf("\n**************************\n\n");		
 			iRet = NTX_BOOTMODE_ESD_UPG;
 			_load_esd_hwconfig();
 		}
 		else if(1==ntxup_wait_key_esdupg()) {
-			printf("\n** Button pressed: booting from external SD **\n");
+			printf("\n**********************************\n\n");
+			printf("\n**  Boot from SD quick recovery **\n\n");
+			printf("\n**********************************\n\n");		
 			iRet = NTX_BOOTMODE_RECOVERY;
 		}
 		else {
@@ -587,9 +615,9 @@ static int _detect_bootmode(void)
 
 	if( (NTXHWCFG_TST_FLAG(gptNtxHwCfg->m_val.bFrontLight_Flags,0)) && (iRet == NTX_BOOTMODE_ISD) )
 	{
-		frontLightCtrl();
+		frontLightCtrl();	
 	}
-
+	
 	return iRet;
 }
 
@@ -601,7 +629,7 @@ void ntx_prebootm(void)
 	char *pcEnv_bootargs=0;
 	char *pcLPJ;
 	unsigned char bSysPartType,bRootFsType,bUIStyle;
-
+	
 	pcEnv_bootargs=getenv("bootargs");
 	if(0==pcEnv_bootargs) {
 		printf("[warning] no bootargs !!! skip %s() \n",__FUNCTION__);
@@ -618,7 +646,7 @@ void ntx_prebootm(void)
 		_load_ntxkernel(&gpbKernelAddr,&gdwKernelSize);
 	}
 
-	if(gptNtxHwCfg) { //[
+	if(gptNtxHwCfg) { //[ 
 
 		//if(NTX_BOOTMODE_ESD_UPG==giNtxBootMode) {
 		//	_load_esd_hwconfig();
@@ -635,6 +663,8 @@ void ntx_prebootm(void)
 			bRootFsType = gptNtxHwCfg->m_val.bRootFsType;
 			bUIStyle = gptNtxHwCfg->m_val.bUIStyle;
 		}
+		
+		
 		if(2==bUIStyle)
 		{
 			// Android UI .
@@ -890,3 +920,5 @@ U_BOOT_CMD(load_ntxbins, 2, 0, do_load_ntxbins,
 		" - load netronix binaries from sd card (hwcfg,logo,waveform).\n"
 );
 //] gallen add 2011/03/02
+
+
