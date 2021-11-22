@@ -17,7 +17,7 @@
 #include <asm/io.h>
 #include <asm/mach-imx/boot_mode.h>
 
-#if !(defined(CONFIG_MX51) || defined(CONFIG_MX53))
+#if !(defined(CONFIG_MX50) || defined(CONFIG_MX51) || defined(CONFIG_MX53))
 #error "CPU_TYPE not defined"
 #endif
 

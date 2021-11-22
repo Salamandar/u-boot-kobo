@@ -210,7 +210,7 @@ static uint32_t decode_pll(struct mxc_pll_reg *pll, uint32_t infreq)
 	return ret;
 }
 
-#ifdef CONFIG_MX51
+#if defined(CONFIG_MX51)
 /*
  * This function returns the Frequency Pre-Multiplier clock.
  */
@@ -237,7 +237,9 @@ static u32 get_lp_apm(void)
 	u32 ccsr = readl(&mxc_ccm->ccsr);
 
 	if (ccsr & MXC_CCM_CCSR_LP_APM)
-#if defined(CONFIG_MX51)
+#if defined(CONFIG_MX50)
+		ret_val = MXC_CLK32 * 1024;
+#elif defined(CONFIG_MX51)
 		ret_val = get_fpm();
 #elif defined(CONFIG_MX53)
 		ret_val = decode_pll(mxc_plls[PLL4_CLOCK], MXC_HCLK);

@@ -81,7 +81,9 @@ struct mxc_ccm_reg {
 #define MXC_CCM_CCR_OSCNT_RD(r)			((r) & 0xFF)
 
 /* Define the bits in register CCSR */
-#if defined(CONFIG_MX51)
+#if defined(CONFIG_MX50)
+#define MXC_CCM_CCSR_LP_APM			(0x1 << 10)
+#elif defined(CONFIG_MX51)
 #define MXC_CCM_CCSR_LP_APM			(0x1 << 9)
 #elif defined(CONFIG_MX53)
 #define MXC_CCM_CCSR_LP_APM			(0x1 << 10)

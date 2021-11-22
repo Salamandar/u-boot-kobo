@@ -161,7 +161,7 @@ setup_pll_func:
 .endm
 
 .macro init_clock
-#if defined (CONFIG_MX51)
+#if defined (CONFIG_MX50) || defined (CONFIG_MX51)
 	ldr r0, =CCM_BASE_ADDR
 
 	/* Gate of clocks to the peripherals first */
@@ -205,8 +205,10 @@ setup_pll_func:
 
 	/* Switch peripheral to PLL 3 */
 	ldr r0, =CCM_BASE_ADDR
+#if defined(CONFIG_MX51)
 	ldr r1, =0x000010C0 | CONFIG_SYS_DDR_CLKSEL
 	str r1, [r0, #CLKCTL_CBCMR]
+#endif
 	ldr r1, =0x13239145
 	str r1, [r0, #CLKCTL_CBCDR]
 	setup_pll PLL2_BASE_ADDR, 665
@@ -215,8 +217,10 @@ setup_pll_func:
 	ldr r0, =CCM_BASE_ADDR
 	ldr r1, =0x19239145
 	str r1, [r0, #CLKCTL_CBCDR]
+#if defined(CONFIG_MX51)
 	ldr r1, =0x000020C0 | CONFIG_SYS_DDR_CLKSEL
 	str r1, [r0, #CLKCTL_CBCMR]
+#endif
 
 	setup_pll PLL3_BASE_ADDR, 216
 
@@ -239,12 +243,14 @@ setup_pll_func:
 	str r4, [r0, #CLKCTL_CCSR]
 
 	/* setup the rest */
+#if defined(CONFIG_MX51)
 	/* Use lp_apm (24MHz) source for perclk */
 	ldr r1, =0x000020C2 | CONFIG_SYS_DDR_CLKSEL
 	str r1, [r0, #CLKCTL_CBCMR]
 	/* ddr clock from PLL 1, all perclk dividers are 1 since using 24MHz */
 	ldr r1, =CONFIG_SYS_CLKTL_CBCDR
 	str r1, [r0, #CLKCTL_CBCDR]
+#endif
 
 	/* Restore the default values in the Gate registers */
 	ldr r1, =0xFFFFFFFF
@@ -412,7 +418,7 @@ W_DP_800:		.word DP_OP_800
 			.word DP_MFD_800
 			.word DP_MFN_800
 #endif
-#if defined(CONFIG_MX51)
+#if defined(CONFIG_MX50) || defined(CONFIG_MX51)
 W_DP_665:		.word DP_OP_665
 			.word DP_MFD_665
 			.word DP_MFN_665

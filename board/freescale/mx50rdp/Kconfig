@@ -1,0 +1,18 @@
+if TARGET_MX50RDP
+
+config SYS_BOARD
+	default "mx50rdp"
+
+config SYS_VENDOR
+	default "freescale"
+
+config SYS_SOC
+	default "mx5"
+
+config SYS_CONFIG_NAME
+	default "mx50rdp"
+
+config IMX_CONFIG
+	default "board/freescale/mx50rdp/imximage.cfg"
+
+endif

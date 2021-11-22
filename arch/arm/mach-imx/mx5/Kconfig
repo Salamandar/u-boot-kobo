@@ -5,6 +5,11 @@ config MX5
 	default y
 	select GPT_TIMER
 
+config MX50
+	bool
+	select ARM_CORTEX_A8_CVE_2017_5715
+	select SYS_FSL_ERRATUM_ESDHC_A001
+
 config MX51
 	bool
 	select ARM_CORTEX_A8_CVE_2017_5715
@@ -37,6 +42,11 @@ config TARGET_M53MENLO
 	bool "Support m53menlo"
 	select MX53
 	select SUPPORT_SPL
+
+config TARGET_MX50RDP
+	bool "Support mx50rdp"
+	select BOARD_LATE_INIT
+	select MX50
 
 config TARGET_MX51EVK
 	bool "Support mx51evk"
@@ -72,6 +82,7 @@ config SYS_SOC
 	default "mx5"
 
 source "board/beckhoff/mx53cx9020/Kconfig"
+source "board/freescale/mx50rdp/Kconfig"
 source "board/freescale/mx51evk/Kconfig"
 source "board/freescale/mx53loco/Kconfig"
 source "board/ge/mx53ppd/Kconfig"

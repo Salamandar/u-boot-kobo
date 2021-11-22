@@ -220,6 +220,8 @@ static int tx_byte(struct mxc_i2c_bus *i2c_bus, u8 byte)
 	writeb(byte, base + (I2DR << reg_shift));
 
 	ret = wait_for_sr_state(i2c_bus, ST_IIF);
+	udelay(2000);
+
 	if (ret < 0)
 		return ret;
 	if (ret & I2SR_RX_NO_AK)

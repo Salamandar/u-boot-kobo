@@ -16,7 +16,7 @@
 #include <linux/arm-smccc.h>
 
 #if defined(CONFIG_MX27) \
-	|| defined(CONFIG_MX51) || defined(CONFIG_MX53)
+	|| defined(CONFIG_MX50) || defined(CONFIG_MX51) || defined(CONFIG_MX53)
 #include <asm/arch/imx-regs.h>
 #endif
 
@@ -61,7 +61,7 @@ int main(void)
 		offsetof(struct system_control_regs, fmcr));
 #endif
 
-#if defined(CONFIG_MX51) || defined(CONFIG_MX53)
+#if defined(CONFIG_MX50) || defined(CONFIG_MX51) || defined(CONFIG_MX53)
 	/* Round up to make sure size gives nice stack alignment */
 	DEFINE(CLKCTL_CCMR, offsetof(struct clkctl, ccr));
 	DEFINE(CLKCTL_CCDR, offsetof(struct clkctl, ccdr));

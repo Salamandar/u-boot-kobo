@@ -8,7 +8,18 @@
 
 #define ARCH_MXC
 
-#if defined(CONFIG_MX51)
+#if defined(CONFIG_MX50)
+#define IRAM_BASE_ADDR		0xF8000000	/* internal ram */
+// #define IPU_SOC_BASE_ADDR	0x0
+// #define IPU_SOC_OFFSET		0x0
+#define SPBA0_BASE_ADDR         0x50000000
+#define AIPS1_BASE_ADDR         0x53F00000
+#define AIPS2_BASE_ADDR         0x63F00000
+#define CSD0_BASE_ADDR          0x70000000
+#define CSD1_BASE_ADDR          0xB0000000
+// #define NFC_BASE_ADDR_AXI       0x0
+// #define CS1_BASE_ADDR           0x0
+#elif defined(CONFIG_MX51)
 #define IRAM_BASE_ADDR		0x1FFE0000	/* internal ram */
 #define IPU_SOC_BASE_ADDR	0x40000000
 #define IPU_SOC_OFFSET		0x1E000000
@@ -380,7 +391,7 @@ struct iomuxc {
 	u32	omux3;
 	u32	omux4;
 };
-#elif defined(CONFIG_MX53)
+#elif defined(CONFIG_MX50) || defined(CONFIG_MX53)
 struct iomuxc {
 	u32	gpr[3];
 	u32	omux0;
@@ -452,6 +463,7 @@ struct srtc_regs {
 	u32	hpienr;		/* 0x38 */
 };
 
+#if defined(CONFIG_MX51) || defined(CONFIG_MX53)
 struct iim_regs {
 	u32	stat;
 	u32	statm;
@@ -478,7 +490,9 @@ struct iim_regs {
 	} bank[5];
 #endif
 };
+#endif
 
+#if defined(CONFIG_MX51) || defined(CONFIG_MX53)
 struct fuse_bank0_regs {
 	u32	fuse0_7[8];
 	u32	uid[8];
@@ -489,6 +503,7 @@ struct fuse_bank0_regs {
 	u32	gp[8];
 #endif
 };
+#endif
 
 struct fuse_bank1_regs {
 	u32	fuse0_8[9];
